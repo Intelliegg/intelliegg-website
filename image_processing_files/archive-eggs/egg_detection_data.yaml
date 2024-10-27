@@ -1,0 +1,6 @@
+names:
+- f
+- i
+nc: 2
+train: C:\Users\dimit\Downloads\AWS Computer Vision Egg Fertility sorting system\archive-eggs\train
+val: C:\Users\dimit\Downloads\AWS Computer Vision Egg Fertility sorting system\archive-eggs\valid

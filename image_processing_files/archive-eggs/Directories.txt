@@ -1,0 +1,30 @@
+C:\Users\dimit\Downloads\AWS Computer Vision Egg Fertility sorting system\archive-eggs
+|
+|--\train   
+|      |--\images 
+|      |     1_jpg.rf.9acf80d138c5822684745a053df74a87.jpg
+|      |     1_jpg.rf.f7b5b3ab90b5997488037ec011c30223.jpg
+|      |     2_jpg.rf.304710486cd4c849c5ed2e21173a43cc.jpg
+|      |     4_jpg.rf.0539e16d7c8603256e9d7fcc393dabe2.jpg
+|      |     5_jpg.rf.50b07ae462f85a903e9b37173460a491.jpg
+|      |     ...
+|      |--\labels
+|            1_jpg.rf.9acf80d138c5822684745a053df74a87.txt
+|            1_jpg.rf.f7b5b3ab90b5997488037ec011c30223.txt
+|            2_jpg.rf.304710486cd4c849c5ed2e21173a43cc.txt
+|            4_jpg.rf.0539e16d7c8603256e9d7fcc393dabe2.txt
+|            5_jpg.rf.50b07ae462f85a903e9b37173460a491.txt
+|            ...                   
+|--\valid
+|      |--\images 
+|      |     (Same format)...
+|      |--\labels
+|            (Same format)...     
+|--\test
+|      |--\images 
+|      |     (Same format)...
+|      |--\labels
+|            test_predictions.csv(0 for fertile, 1 for unfertile)
+|--data.yaml
+|--README.dataset.txt
+|--README.roboflow.txt                                                                           
