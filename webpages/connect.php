@@ -30,7 +30,8 @@
             flex-direction: column;
             text-align: center;
             height: 70px;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             border-radius: 10px;
             color: black;
             cursor: pointer;
@@ -42,13 +43,38 @@
         }
 
         h1 {
-            color:white;
+            color: white;
         }
-        h3{
-            color:#6F4E37;
+
+        h3 {
+            color: #6F4E37;
         }
+
         .hidden {
             display: none;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .cards {
+                padding: 5%;
+            }
+
+            .cards .card {
+                height: 60px;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards {
+                padding: 3%;
+            }
+
+            .cards .card {
+                height: 50px;
+                max-width: 250px;
+            }
         }
     </style>
 </head>
@@ -56,7 +82,7 @@
 
 <div id="loading" class="hidden">Loading...</div> <!-- Loading element -->
 <div class="cards" id="cardsContainer">
-<h1>CONNECT TO INCUBATOR</h1>
+    <h1>CONNECT TO INCUBATOR</h1>
     <h3>Available Incubators...</h3>
 </div>
 
@@ -68,50 +94,49 @@
         loadingElement.classList.remove('hidden');
 
         fetch('../webpages/fetch_incubators.php')
-    .then(response => response.json())
-    .then(data => {
-        loadingElement.classList.add('hidden');
-        const displayedIncubators = new Set(); 
-        if (data.length > 0) {
-            data.forEach(incubator => {
-                if (!displayedIncubators.has(incubator.incubatorNo)) {
-                    const card = document.createElement('div');
-                    card.className = 'card'; 
-                    card.style.backgroundColor = getCardColor();
+            .then(response => response.json())
+            .then(data => {
+                loadingElement.classList.add('hidden');
+                const displayedIncubators = new Set();
+                if (data.length > 0) {
+                    data.forEach(incubator => {
+                        if (!displayedIncubators.has(incubator.incubatorNo)) {
+                            const card = document.createElement('div');
+                            card.className = 'card';
+                            card.style.backgroundColor = getCardColor();
 
-                    const tip = document.createElement('p');
-                    tip.className = 'tip';
-                    tip.innerHTML = `<i class="bi bi-egg"></i> ${incubator.incubatorNo}`;
+                            const tip = document.createElement('p');
+                            tip.className = 'tip';
+                            tip.innerHTML = `<i class="bi bi-egg"></i> ${incubator.incubatorNo}`;
 
-                    card.appendChild(tip);
-                    cardsContainer.appendChild(card);
-                    card.addEventListener('click', () => {
-                        Swal.fire({
-                            title: "CONNECTED SUCCESSFULLY!",
-                            text: "Connected to incubator " + incubator.incubatorNo,
-                            icon: "success"
-                        }).then(() => {
-                            window.location.href = '../webpages/home.php?incubatorNo=' + incubator.incubatorNo;
-                        });
+                            card.appendChild(tip);
+                            cardsContainer.appendChild(card);
+                            card.addEventListener('click', () => {
+                                Swal.fire({
+                                    title: "CONNECTED SUCCESSFULLY!",
+                                    text: "Connected to incubator " + incubator.incubatorNo,
+                                    icon: "success"
+                                }).then(() => {
+                                    window.location.href = '../webpages/home.php?incubatorNo=' + incubator.incubatorNo;
+                                });
+                            });
+
+                            displayedIncubators.add(incubator.incubatorNo);
+                        }
                     });
-
-                    displayedIncubators.add(incubator.incubatorNo); 
+                } else {
+                    cardsContainer.innerHTML = '<p>No incubators found.</p>';
                 }
+            })
+            .catch(error => {
+                loadingElement.classList.add('hidden');
+                cardsContainer.innerHTML = '<p>Error fetching incubators.</p>';
+                console.error('Error:', error);
             });
-        } else {
-            cardsContainer.innerHTML = '<p>No incubators found.</p>';
-        }
-    })
-    .catch(error => {
-        loadingElement.classList.add('hidden');
-        cardsContainer.innerHTML = '<p>Error fetching incubators.</p>';
-        console.error('Error:', error);
-    });
-
     });
 
     function getCardColor() {
-        const colors = ['#994D1C', '#E48F45', '#F5CCA0']; 
+        const colors = ['#994D1C', '#E48F45', '#F5CCA0'];
         return colors[Math.floor(Math.random() * colors.length)];
     }
 </script>
