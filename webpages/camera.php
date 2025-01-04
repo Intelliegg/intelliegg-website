@@ -1,69 +1,90 @@
 <?php
 session_start();
- if (!isset($_SESSION['user']) || $_SESSION['user'] != 'customer'){
-  header('location: ../index.html');
+if (!isset($_SESSION['user']) || $_SESSION['user'] != 'customer') {
+    header('location: ../index.html');
 }
 require_once '../classes/database.php';
 
 $db = new Database();
-$pdo = $db->connect(); 
+$pdo = $db->connect();
 if (isset($_GET['incubatorNo'])) {
     $_SESSION['incubatorNo'] = $_GET['incubatorNo'];
 }
+
+// YouTube Data API Key
+$apiKey = 'AIzaSyAN5jI9nyTOjVoWVAwKDt51a7lBT0d-8nI'; // Replace with your YouTube API key
+$channelId = 'UCAQbRLWc7zLnMR4PR5ohPaw'; // Replace with your YouTube channel ID
+
+// Fetch the latest live stream video ID
+$url = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=$channelId&eventType=live&type=video&key=$apiKey";
+$response = file_get_contents($url);
+$data = json_decode($response, true);
+
+$videoId = '';
+if (isset($data['items'][0]['id']['videoId'])) {
+    $videoId = $data['items'][0]['id']['videoId'];
+}
+
+// If no live stream is found, use a default video ID
+if (empty($videoId)) {
+    $videoId = 'AcC83VoukOc'; // Replace with your default YouTube video ID
+}
+
+$embedUrl = "https://www.youtube.com/embed/$videoId?autoplay=1";
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Intelli-Egg Camera</title>
-  <link rel="icon" type="image/x-icon" href="../images/logo-home.png">
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="../vendor/aos/aos.css" rel="stylesheet">
-  <link href="../vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="../vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  <link href="../css/main.css" rel="stylesheet">
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Intelli-Egg Camera</title>
+    <link rel="icon" type="image/x-icon" href="../images/logo-home.png">
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="../vendor/aos/aos.css" rel="stylesheet">
+    <link href="../vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="../vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="../css/main.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    /* Style for the gray box around the camera feed */
-    .camera-feed-container {
-      background-color: #d3d3d3; /* Light gray background */
-      padding: 10px;
-      border-radius: 10px; /* Optional rounded corners */
-      display: inline-block;
-      width:100%;
-      height:70vh;
-    }
+    <style>
+        /* Style for the gray box around the camera feed */
+        .camera-feed-container {
+            background-color: #d3d3d3; /* Light gray background */
+            padding: 10px;
+            border-radius: 10px; /* Optional rounded corners */
+            display: inline-block;
+            width: 100%;
+            height: 80vh;
+        }
 
-@media (max-width: 375px) {
-       h3{
-       font-size: 20px;
-}
-}
-  </style>
+        @media (max-width: 375px) {
+            h3 {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body class="index-page" style="background-color: #FDD9A4;">
-<div style="display: flex; align-items: center; justify-content: space-between; padding: 20px; background-color: #A27C5A; margin: 0;">
-    <div style="display: flex; align-items: center; justify-content: center; flex-grow: 1;">
-        <img src="../images/logo-home.png" alt="logo" style="width: 60px; height: 30px; margin-right: 10px;">
-        <h3 style="color: #FFA458; margin: 0;">Intelli-Egg</h3>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px; background-color: #A27C5A; margin: 0;">
+        <div style="display: flex; align-items: center; justify-content: center; flex-grow: 1;">
+            <img src="../images/logo-home.png" alt="logo" style="width: 60px; height: 30px; margin-right: 10px;">
+            <h3 style="color: #FFA458; margin: 0;">Intelli-Egg</h3>
+        </div>
     </div>
-</div>
 
-<header id="header" class="header d-flex flex-column justify-content-center">
+    <header id="header" class="header d-flex flex-column justify-content-center">
         <i class="header-toggle d-xl-none bi bi-list"></i>
         <nav id="navmenu" class="navmenu">
             <ul>
@@ -76,7 +97,7 @@ if (isset($_GET['incubatorNo'])) {
                 <li><a href="temp_humid.php?incubatorNo=<?php echo $_SESSION['incubatorNo']; ?>">
                         <i class="bi bi-thermometer navicon"></i><span>Temp & Humid</span></a>
                 </li>
-                <li><a href="camera.php?incubatorNo=<?php echo $_SESSION['incubatorNo']; ?>"class="active">
+                <li><a href="camera.php?incubatorNo=<?php echo $_SESSION['incubatorNo']; ?>" class="active">
                         <i class="bi bi-camera-fill navicon"></i><span>Camera</span></a>
                 </li>
                 <li><a href="settings.php?incubatorNo=<?php echo $_SESSION['incubatorNo']; ?>">
@@ -86,64 +107,54 @@ if (isset($_GET['incubatorNo'])) {
             </ul>
         </nav>
     </header>
+
     <main class="main">
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-12">
-                <div class="card" style="background-color: #FDD9A4; border: none;">
-                    <div class="card-body text-center">
-                        <div class="camera-feed-container" style="width: 100%; height: 100%; position: relative;">
-                            <img src="http://192.168.0.117:7123/stream.mjpg" alt="Camera Feed"
-                                class="img-fluid"
-                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-                        </div>
-                      
-                        <div class="d-flex align-items-center" style="background-color: #F1E6CF; border: 1px solid #D3C2A8; padding: 1rem; border-radius: 5px; font-size: 1.2rem; margin:10px; justify-content: center;">
-                            <div class="form-check form-switch" style="text-align:center;">
-                                <input class="form-check-input" type="checkbox" role="switch" id="candlingSwitch" onchange="controlRelay(this.checked ? 'on' : 'off')">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card" style="background-color: #FDD9A4; border: none;">
+                        <div class="card-body text-center">
+                            <div class="camera-feed-container" style="width: 100%; position: relative;">
+                                <!-- Embed YouTube live stream using iframe -->
+                                <iframe width="100%" height="100%" src="<?php echo $embedUrl; ?>" title="YouTube live stream" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             </div>
-                            <label style="text-align:center;">Candling</label>
+
+                            <div class="d-flex align-items-center" style="background-color: #F1E6CF; border: 1px solid #D3C2A8; padding: 1rem; border-radius: 5px; font-size: 1.2rem; margin:10px; justify-content: center;">
+                                <div class="form-check form-switch" style="text-align:center;">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="candlingSwitch" onchange="controlRelay(this.checked ? 'on' : 'off')">
+                                </div>
+                                <label style="text-align:center;">Candling</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<script>
-function controlRelay(state) {
-  fetch(`http://192.168.0.104/candling?state=${state}`)
-    .then(response => response.text())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-}
-</script>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    <div id="preloader"></div>
 
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  <div id="preloader"></div>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/aos/aos.js"></script>
+    <script src="../vendor/typed.js/typed.umd.js"></script>
+    <script src="../vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="../vendor/waypoints/noframework.waypoints.js"></script>
+    <script src="../vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="../vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="../vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="../vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="../js/main.js"></script>
 
-  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../vendor/aos/aos.js"></script>
-  <script src="../vendor/typed.js/typed.umd.js"></script>
-  <script src="../vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="../vendor/waypoints/noframework.waypoints.js"></script>
-  <script src="../vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="../vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
-  <script src="../vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="../vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="../js/main.js"></script>
+    <script>
+        function controlRelay(state) {
+            fetch(`http://192.168.0.104/candling?state=${state}`)
+                .then(response => response.text())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
 
-</body>
-<script>
-     const logoutLink = document.getElementById('logoutLink');
+        const logoutLink = document.getElementById('logoutLink');
         logoutLink.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent default link behavior
 
@@ -162,5 +173,7 @@ function controlRelay(state) {
                 }
             });
         });
-</script>
+    </script>
+</body>
+
 </html>
